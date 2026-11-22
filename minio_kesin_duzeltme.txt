@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# MinIO resmi imajlari artik anonim indirilemiyor; S3 uyumlu Silo kullaniyoruz.
+IMAGE=pgsty/silo:latest
+docker pull "$IMAGE"
+docker volume create minio_data >/dev/null
+if docker ps -a --format '{{.Names}}' | grep -qx minio; then docker rm -f minio >/dev/null; fi
+if [ ! -f .minio-credentials ]; then
+  umask 077
+  printf 'MINIO_ROOT_USER=admin\nMINIO_ROOT_PASSWORD=%s\n' "$(openssl rand -hex 24)" > .minio-credentials
+fi
+docker run -d --name minio --restart unless-stopped \
+  -p 9000:9000 -p 9001:9001 \
+  --env-file .minio-credentials \
+  -v minio_data:/data \
+  "$IMAGE" server /data --console-address ':9001'
+echo '--- Durum ---'
+docker ps --filter name=minio
+echo 'Giris bilgileri (baskalariyla paylasma):'
+cat .minio-credentials
+echo 'Codespaces PORTS > 9001 > Open in Browser (Private)'
