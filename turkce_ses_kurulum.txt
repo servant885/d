@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+python3 -m venv .venv-tts
+. .venv-tts/bin/activate
+python -m pip install --upgrade pip
+python -m pip install edge-tts
+python -m edge_tts --voice tr-TR-AhmetNeural --text 'Allah sizin için kolaylık ister, zorluk istemez.' --write-media deneme_ses.mp3
+printf '\nTamam! deneme_ses.mp3 dosyasini VS Code dosya gezgininden acabilirsin.\n'
