@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+docker volume create minio_data
+
+if docker container inspect minio >/dev/null 2>&1; then
+  echo 'minio isimli container zaten var. Mevcut container korunuyor.'
+  docker start minio
+else
+  docker run -d \
+    --name minio \
+    -p 9000:9000 \
+    -p 9001:9001 \
+    -e MINIO_ROOT_USER=admin \
+    -e MINIO_ROOT_PASSWORD=GucluSifre2026X \
+    -v minio_data:/data \
+    quay.io/minio/minio server /data --console-address ':9001'
+fi
+
+echo 'MinIO hazir. Codespaces PORTS sekmesinden 9001 portunu Private olarak ac.'
