@@ -1,0 +1,8 @@
+python -m pip install edge-tts
+
+edge-tts \
+  --voice tr-TR-AhmetNeural \
+  --rate=-5% \
+  --pitch=+2Hz \
+  --text "Şüphesiz güçlükle beraber bir kolaylık vardır. İnşirah Suresi, beşinci ayet." \
+  --write-media ahmet_ses.mp3
