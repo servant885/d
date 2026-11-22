@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+# Quay.io 401 hatasi icin Docker Hub uzerinden dene.
+docker pull minio/minio:latest
+docker rm -f minio 2>/dev/null || true
+docker volume create minio_data >/dev/null
+MINIO_PASSWORD="$(openssl rand -hex 18)"
+docker run -d \
+  --name minio \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -e MINIO_ROOT_USER=admin \
+  -e MINIO_ROOT_PASSWORD="$MINIO_PASSWORD" \
+  -v minio_data:/data \
+  --restart unless-stopped \
+  minio/minio:latest server /data --console-address ':9001'
+echo "Kullanici adi: admin"
+echo "Sifre: $MINIO_PASSWORD"
+echo 'Sifreyi guvenli bir yere kaydet. Ports > 9001 > Private > Open in Browser.'
